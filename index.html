@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LTD Mail – Email Tạm Thời Miễn Phí | letiendung.com</title>
+<meta name="description" content="Tạo email tạm thời miễn phí, nhận thư nhanh, bảo mật tuyệt đối. Bởi Lê Tiến Dũng.">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#02040a;--bg1:#060b14;--bg2:#0a1120;--bg3:#0f1a2e;
+  --surface:#111827;--surface2:#1a2540;
+  --border:rgba(0,200,255,0.12);--border2:rgba(0,200,255,0.28);
+  --cyan:#00c8ff;--cyan2:#00e5ff;--green:#00ff9d;
+  --orange:#ff8c00;--red:#ff3d57;--purple:#8b5cf6;
+  --text:#cbd5e1;--text2:#94a3b8;--muted:#4a5568;--white:#f0f9ff;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+::selection{background:rgba(0,200,255,0.3);color:var(--white)}
+html{scroll-behavior:smooth}
+body{background:var(--bg0);color:var(--text);font-family:'IBM Plex Mono',monospace;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg1)}::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px}
+
+/* BG FX */
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,200,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,0.03) 1px,transparent 1px);
+  background-size:50px 50px;animation:gDrift 25s linear infinite}
+@keyframes gDrift{to{background-position:50px 50px}}
+.radial{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 50% at 15% 25%,rgba(0,200,255,0.06) 0%,transparent 60%),
+             radial-gradient(ellipse 50% 40% at 85% 75%,rgba(139,92,246,0.06) 0%,transparent 60%)}
+.scan{position:fixed;inset:0;z-index:200;pointer-events:none;opacity:0.022;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.5) 2px,rgba(0,0,0,0.5) 4px)}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:rgba(2,4,10,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:11px 0}
+.hdr{max-width:1280px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:11px}
+.logo-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--cyan),var(--purple));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 20px rgba(0,200,255,0.3);animation:lPulse 3s ease-in-out infinite;flex-shrink:0}
+@keyframes lPulse{0%,100%{box-shadow:0 0 20px rgba(0,200,255,0.3)}50%{box-shadow:0 0 40px rgba(0,200,255,0.6)}}
+.logo-name{font-family:'Orbitron',sans-serif;font-weight:900;font-size:19px;letter-spacing:1px;color:var(--white)}
+.logo-name span{color:var(--cyan)}
+.logo-sub{font-size:9px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;margin-top:1px}
+.hdr-r{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sdot{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--green);letter-spacing:1px;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 7px var(--green);animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.obadge{padding:4px 10px;border:1px solid var(--border2);border-radius:20px;font-size:10px;color:var(--cyan);background:rgba(0,200,255,0.08);white-space:nowrap}
+
+/* NAV TABS */
+.nav-tabs{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:3px}
+.ntab{padding:6px 13px;border-radius:7px;font-size:11px;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'IBM Plex Mono',monospace;transition:all 0.2s;white-space:nowrap}
+.ntab.active{background:linear-gradient(135deg,rgba(0,200,255,0.2),rgba(139,92,246,0.2));color:var(--cyan);border:1px solid var(--border2)}
+.ntab:hover:not(.active){color:var(--text);background:rgba(255,255,255,0.04)}
+
+/* LAYOUT */
+.wrap{max-width:1280px;margin:0 auto;padding:22px 20px;position:relative;z-index:1}
+.tp{display:none}.tp.on{display:block}
+
+/* CARD */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;position:relative;overflow:hidden;margin-bottom:14px}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--purple),transparent)}
+.card-head{padding:16px 22px;border-bottom:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-body{padding:20px 22px}
+.stitle{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:7px}
+.stitle::before{content:'';width:13px;height:1px;background:var(--cyan)}
+
+/* BUTTONS */
+.btn{padding:10px 16px;border:none;border-radius:9px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;cursor:pointer;transition:all 0.22s;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none;vertical-align:middle}
+.btn-p{background:linear-gradient(135deg,var(--cyan),rgba(0,175,215,0.85));color:var(--bg0);box-shadow:0 0 16px rgba(0,200,255,0.2)}
+.btn-p:hover{box-shadow:0 0 28px rgba(0,200,255,0.5);transform:translateY(-1px)}
+.btn-s{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-s:hover{border-color:var(--border2);color:var(--cyan)}
+.btn-d{background:rgba(255,61,87,0.12);color:var(--red);border:1px solid rgba(255,61,87,0.3)}
+.btn-d:hover{background:rgba(255,61,87,0.22)}
+.btn-g{background:rgba(0,255,157,0.12);color:var(--green);border:1px solid rgba(0,255,157,0.3)}
+.btn-g:hover{background:rgba(0,255,157,0.22)}
+.btn-o{background:rgba(255,140,0,0.12);color:var(--orange);border:1px solid rgba(255,140,0,0.3)}
+.btn-o:hover{background:rgba(255,140,0,0.22)}
+.sm{padding:6px 11px;font-size:10px}
+.btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important}
+
+/* EMAIL INPUT */
+.ig{display:flex;align-items:center;background:var(--bg3);border:1px solid var(--border);border-radius:11px;overflow:hidden;transition:border-color 0.3s,box-shadow 0.3s}
+.ig:focus-within{border-color:var(--cyan);box-shadow:0 0 16px rgba(0,200,255,0.12)}
+.ifield{padding:13px 14px;flex:1;background:transparent;border:none;outline:none;color:var(--white);font-family:'IBM Plex Mono',monospace;font-size:14px;min-width:0}
+.ifield::placeholder{color:var(--muted)}
+.iat{padding:13px 5px;color:var(--cyan);font-size:14px;font-weight:700;flex-shrink:0}
+.dsel{padding:12px 28px 12px 4px;background:transparent;border:none;outline:none;color:var(--cyan);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2300c8ff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;min-width:190px;flex-shrink:0}
+.dsel option{background:var(--surface);color:var(--white)}
+
+/* ACTIVE EMAIL BAR */
+.ebar{margin-top:14px;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.eaddr{font-size:15px;font-weight:600;color:var(--white);word-break:break-all;cursor:pointer;transition:color 0.2s;user-select:all}
+.eaddr:hover{color:var(--cyan)}
+.eaddr span{color:var(--cyan)}
+.elabel{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+.eacts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 14px}
+.scard{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;transition:border-color 0.3s,transform 0.2s;cursor:default}
+.scard:hover{border-color:var(--border2);transform:translateY(-2px)}
+.snum{font-family:'Orbitron',sans-serif;font-size:21px;font-weight:700;margin-bottom:3px}
+.slabel{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+
+/* INBOX GRID */
+.igrid{display:grid;grid-template-columns:270px 1fr;gap:12px;align-items:start}
+
+/* INBOX PANEL */
+.inpanel{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;position:sticky;top:76px}
+.inhead{padding:13px 15px;border-bottom:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:space-between}
+.icnt{background:var(--cyan);color:var(--bg0);font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;min-width:20px;text-align:center}
+.rbtn{padding:5px 8px;background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--text2);font-size:10px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace}
+.rbtn:hover{border-color:var(--cyan);color:var(--cyan)}
+.rbtn.sp svg{animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pbar{height:2px;background:var(--bg3)}
+.pfill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));transform-origin:left;animation:pA 10s linear forwards}
+@keyframes pA{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+
+.elist{max-height:calc(100vh - 310px);overflow-y:auto}
+.ei{padding:12px 15px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;position:relative}
+.ei:hover{background:rgba(0,200,255,0.04)}
+.ei.act{background:rgba(0,200,255,0.08);border-left:3px solid var(--cyan)}
+.ei.unr::after{content:'';position:absolute;right:12px;top:50%;transform:translateY(-50%);width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 7px var(--cyan)}
+.ef{font-size:11px;font-weight:600;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:16px;margin-bottom:2px}
+.es{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:16px}
+.et{font-size:10px;color:var(--muted);margin-top:3px}
+.emptybox{padding:40px 14px;text-align:center}
+.eicon{font-size:38px;display:block;margin-bottom:12px;animation:flt 3s ease-in-out infinite}
+@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.et1{font-size:12px;color:var(--text2);margin-bottom:3px}.et2{font-size:10px;color:var(--muted)}
+
+/* MAIL VIEW */
+.mview{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;min-height:420px}
+.mph{display:flex;flex-direction:column;align-items:center;justify-content:center;height:420px;gap:12px;color:var(--muted)}
+.mph-icon{font-size:52px;opacity:0.22}
+.mhead{padding:18px 22px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.msubj{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:600;color:var(--white);margin-bottom:9px;line-height:1.4}
+.mmeta{display:flex;flex-direction:column;gap:4px}
+.mrow{display:flex;gap:9px;font-size:11px}
+.mk{color:var(--muted);width:26px;flex-shrink:0}.mv{color:var(--text);word-break:break-all}
+.mbody-wrap{padding:0;max-height:480px;overflow-y:auto}
+.mbody{font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;word-break:break-word;padding:20px 22px}
+.mbody a{color:var(--cyan)}
+.mtbar{padding:11px 22px;border-top:1px solid var(--border);display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+
+/* YOPMAIL IFRAME */
+.yop-frame-wrap{position:relative;background:var(--bg3);border-radius:10px;overflow:hidden;margin:0}
+.yop-frame-wrap iframe{width:100%;height:560px;border:none;display:block;border-radius:10px}
+.yop-overlay{position:absolute;inset:0;background:rgba(2,4,10,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;border-radius:10px;backdrop-filter:blur(8px)}
+.yop-overlay.hidden{display:none}
+.yop-msg{font-size:13px;color:var(--text2);text-align:center;max-width:320px;line-height:1.7}
+
+/* YOPMAIL OPEN BUTTON AREA */
+.yop-action{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:20px;text-align:center;margin-top:0}
+.yop-action p{font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.7}
+
+/* TAGS */
+.ftags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ft{padding:3px 9px;border-radius:17px;font-size:9px;letter-spacing:1px;text-transform:uppercase;display:inline-block}
+.ftc{background:rgba(0,200,255,0.08);color:var(--cyan);border:1px solid rgba(0,200,255,0.2)}
+.ftg{background:rgba(0,255,157,0.08);color:var(--green);border:1px solid rgba(0,255,157,0.2)}
+.ftp{background:rgba(139,92,246,0.08);color:var(--purple);border:1px solid rgba(139,92,246,0.2)}
+.fto{background:rgba(255,140,0,0.08);color:var(--orange);border:1px solid rgba(255,140,0,0.2)}
+
+/* SAVED */
+.svlist{display:flex;flex-direction:column;gap:8px}
+.svitem{background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;transition:border-color 0.2s}
+.svitem:hover{border-color:var(--border2)}
+.svaddr{font-size:13px;color:var(--white);word-break:break-all}
+.svaddr span{color:var(--cyan)}
+.svmeta{font-size:10px;color:var(--muted);margin-top:3px}
+.svbtns{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap}
+.esaved{text-align:center;padding:36px;color:var(--muted);font-size:12px;line-height:2}
+
+/* CONTACT */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:16px}
+.ccard{background:var(--bg3);border:1px solid var(--border);border-radius:13px;padding:20px;text-align:center;transition:all 0.25s;text-decoration:none;display:block}
+.ccard:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,200,255,0.09)}
+.cc-icon{font-size:32px;margin-bottom:10px}
+.cc-name{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:var(--white);margin-bottom:3px}
+.cc-h{font-size:11px;color:var(--cyan)}
+.cc-d{font-size:10px;color:var(--muted);margin-top:7px;line-height:1.6}
+
+/* LOADING */
+.ldo{position:fixed;inset:0;z-index:999;background:var(--bg0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 0.5s}
+.ldo.gone{opacity:0;pointer-events:none}
+.llogo{font-family:'Orbitron',sans-serif;font-size:30px;font-weight:900;color:var(--cyan);letter-spacing:4px;animation:glow 1.4s ease-in-out infinite alternate}
+@keyframes glow{from{text-shadow:0 0 16px rgba(0,200,255,0.5)}to{text-shadow:0 0 38px rgba(0,200,255,1),0 0 65px rgba(0,200,255,0.5)}}
+.lbar{width:170px;height:2px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.lfill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));animation:lA 1.5s ease-in-out infinite}
+@keyframes lA{0%{width:0%;margin-left:0}50%{width:60%;margin-left:20%}100%{width:0%;margin-left:100%}}
+.ltxt{font-size:10px;color:var(--muted);letter-spacing:3px;text-transform:uppercase}
+
+/* TOAST */
+#tbox{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{padding:10px 15px;border-radius:9px;font-size:12px;font-family:'IBM Plex Mono',monospace;backdrop-filter:blur(20px);animation:tIn 0.3s cubic-bezier(0.34,1.56,0.64,1);display:flex;align-items:center;gap:8px;max-width:300px;pointer-events:auto;word-break:break-word}
+@keyframes tIn{from{opacity:0;transform:translateX(38px) scale(0.9)}to{opacity:1;transform:none}}
+.ts{background:rgba(0,255,157,0.14);border:1px solid rgba(0,255,157,0.35);color:var(--green)}
+.te{background:rgba(255,61,87,0.14);border:1px solid rgba(255,61,87,0.35);color:var(--red)}
+.ti{background:rgba(0,200,255,0.14);border:1px solid rgba(0,200,255,0.35);color:var(--cyan)}
+
+/* FOOTER */
+footer{text-align:center;padding:24px 20px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);letter-spacing:1px;position:relative;z-index:1}
+footer a{color:var(--cyan);text-decoration:none}footer span{color:var(--cyan)}
+
+/* RESPONSIVE */
+@media(max-width:860px){.igrid{grid-template-columns:1fr}.inpanel{position:static}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.hdr-r .sdot{display:none}.ntab{padding:5px 8px;font-size:10px}.dsel{min-width:150px}.stats .scard:nth-child(3){display:none}}
+
+/* COPY FLASH */
+.cflash{animation:cf 0.4s ease}
+@keyframes cf{0%{background:rgba(0,255,157,0.22)}100%{background:transparent}}
+.npulse{animation:np 0.5s ease}
+@keyframes np{0%{transform:scale(1)}50%{transform:scale(1.015);box-shadow:0 0 18px rgba(0,200,255,0.2)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="ldo" id="ld">
+  <div class="llogo">LTD MAIL</div>
+  <div class="lbar"><div class="lfill"></div></div>
+  <div class="ltxt">Đang khởi động hệ thống...</div>
+</div>
+
+<div class="grid-bg"></div><div class="radial"></div><div class="scan"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-icon">📧</div>
+      <div>
+        <div class="logo-name">LTD<span>MAIL</span></div>
+        <div class="logo-sub">Temporary Email Service</div>
+      </div>
+    </div>
+    <div class="nav-tabs">
+      <button class="ntab active" onclick="goTab('inbox')">📬 Hộp Thư</button>
+      <button class="ntab" onclick="goTab('saved')">💾 Đã Lưu</button>
+      <button class="ntab" onclick="goTab('contact')">📞 Liên Hệ</button>
+    </div>
+    <div class="hdr-r">
+      <div class="sdot"><div class="dot"></div> ONLINE</div>
+      <div class="obadge">👨‍💻 Lê Tiến Dũng</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ═══ TAB: INBOX ═══════════════════════════════════════ -->
+  <div class="tp on" id="tp-inbox">
+
+    <!-- Generator -->
+    <div class="card">
+      <div class="card-body">
+        <div class="stitle" style="margin-bottom:14px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+          TẠO EMAIL TẠM THỜI
+        </div>
+
+        <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:stretch">
+          <div class="ig" style="flex:1;min-width:230px">
+            <input type="text" id="epfx" class="ifield" placeholder="tên tùy chọn (hoặc để trống)" maxlength="30" autocomplete="off" spellcheck="false">
+            <span class="iat">@</span>
+            <select id="dsel" class="dsel" onchange="onDomainChange()">
+              <!-- Yopmail domains từ file gốc -->
+              <option value="letiendung.ooguy.com">letiendung.ooguy.com</option>
+              <option value="ltdmail.accesscam.org">ltdmail.accesscam.org</option>
+              <option value="mailltd.camdvr.org">mailltd.camdvr.org</option>
+              <option value="ltdmail1s.casacam.net">ltdmail1s.casacam.net</option>
+              <option value="letiendung.webredirect.org">letiendung.webredirect.org</option>
+              <option value="dungmail.loseyourip.com">dungmail.loseyourip.com</option>
+            </select>
+          </div>
+          <button class="btn btn-s" onclick="doRandom()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+            RANDOM
+          </button>
+          <button class="btn btn-p" id="cbtn" onclick="doCreate()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            TẠO EMAIL
+          </button>
+        </div>
+
+        <div id="ebar" class="ebar" style="display:none">
+          <div style="min-width:0">
+            <div class="elabel">📬 Email đang hoạt động – Click để sao chép</div>
+            <div class="eaddr" id="eshow" onclick="doCopy()" title="Click để sao chép"></div>
+          </div>
+          <div class="eacts">
+            <button class="btn btn-g sm" onclick="doCopy()" id="copybtn">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              SAO CHÉP
+            </button>
+            <button class="btn btn-s sm" onclick="doSave()">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              LƯU LẠI
+            </button>
+            <button class="btn btn-o sm" onclick="doYopmail()">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              MỞ YOPMAIL
+            </button>
+            <button class="btn btn-d sm" onclick="doReset()">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+              ĐỔI MỚI
+            </button>
+          </div>
+        </div>
+
+        <div class="ftags">
+          <span class="ft ftg">✓ Ẩn danh 100%</span>
+          <span class="ft ftc">⚡ Nhận thư tức thì</span>
+          <span class="ft ftp">🔒 Bảo mật cao</span>
+          <span class="ft fto">♾️ Không tự xóa</span>
+          <span class="ft ftc">📱 Đăng ký FB/TikTok</span>
+          <span class="ft ftg">🌐 Yopmail API</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="scard"><div class="snum" id="stTotal" style="color:var(--cyan)">0</div><div class="slabel">📬 Tổng thư</div></div>
+      <div class="scard"><div class="snum" id="stUnread" style="color:var(--green)">0</div><div class="slabel">🔔 Chưa đọc</div></div>
+      <div class="scard"><div class="snum" style="color:var(--purple)">10<span style="font-size:12px">s</span></div><div class="slabel">🔄 Cập nhật</div></div>
+      <div class="scard"><div class="snum" id="stSaved" style="color:var(--orange)">0</div><div class="slabel">💾 Đã lưu</div></div>
+    </div>
+
+    <!-- Inbox + Mail View -->
+    <div class="igrid" id="igrid" style="display:none">
+
+      <!-- Inbox Panel -->
+      <div class="inpanel">
+        <div class="inhead">
+          <span class="stitle" style="font-size:10px">📥 HỘP THƯ</span>
+          <div style="display:flex;align-items:center;gap:7px">
+            <span class="icnt" id="icnt">0</span>
+            <button class="rbtn" id="rbtn" onclick="doRefresh()">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+              LÀM MỚI
+            </button>
+          </div>
+        </div>
+        <div class="pbar"><div class="pfill" id="pfill"></div></div>
+        <div class="elist" id="elist">
+          <div class="emptybox"><span class="eicon">📭</span><div class="et1">Hộp thư trống</div><div class="et2">Đang chờ thư đến...</div></div>
+        </div>
+      </div>
+
+      <!-- Mail View -->
+      <div class="mview" id="mview">
+        <div class="mph"><div class="mph-icon">💌</div><div style="font-size:12px;color:var(--muted)">Chọn thư để đọc hoặc mở Yopmail</div></div>
+      </div>
+
+    </div>
+
+    <!-- Yopmail iframe section (shown after email created) -->
+    <div id="yopSection" style="display:none">
+      <div class="card">
+        <div class="card-head">
+          <span class="stitle">🌐 XEM THƯ TRỰC TIẾP QUA YOPMAIL</span>
+          <button class="btn btn-p sm" onclick="reloadYop()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+            TẢI LẠI
+          </button>
+        </div>
+        <div class="card-body" style="padding:14px">
+          <!-- Option 1: Open in new tab (most reliable) -->
+          <div class="yop-action" id="yopAction">
+            <div style="font-size:36px;margin-bottom:12px">📬</div>
+            <p>
+              Yopmail sử dụng CORS protection nên không thể nhúng iframe trực tiếp.<br>
+              Nhấn nút bên dưới để <strong style="color:var(--cyan)">mở hộp thư Yopmail</strong> trong tab mới.<br>
+              Email đang dùng: <strong id="yopEmailShow" style="color:var(--cyan)"></strong>
+            </p>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+              <button class="btn btn-p" onclick="doYopmail()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                MỞ YOPMAIL TRONG TAB MỚI
+              </button>
+              <button class="btn btn-g" onclick="tryIframe()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                THỬ NHÚNG VÀO TRANG
+              </button>
+            </div>
+          </div>
+
+          <!-- Option 2: iframe embed (try) -->
+          <div id="yopIframeWrap" style="display:none" class="yop-frame-wrap">
+            <iframe id="yopFrame" title="Yopmail Inbox" loading="lazy" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+            <div style="padding:14px;display:flex;gap:8px;align-items:center;background:var(--bg3);border-top:1px solid var(--border)">
+              <span style="font-size:11px;color:var(--muted);flex:1">Nếu trang trắng/lỗi, hãy dùng nút Mở Tab Mới bên dưới</span>
+              <button class="btn btn-p sm" onclick="doYopmail()">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                MỞ TAB MỚI
+              </button>
+              <button class="btn btn-s sm" onclick="hideIframe()">✕ Đóng</button>
+            </div>
+          </div>
+
+          <!-- Instructions -->
+          <div style="margin-top:14px;background:rgba(0,200,255,0.05);border:1px solid var(--border);border-radius:10px;padding:14px">
+            <div class="stitle" style="font-size:10px;margin-bottom:10px">💡 HƯỚNG DẪN NHẬN OTP</div>
+            <div style="font-size:11px;color:var(--text2);line-height:2">
+              <div>1️⃣ Tạo email → Copy địa chỉ → Dán vào form đăng ký <strong style="color:var(--white)">Facebook / TikTok / Google</strong></div>
+              <div>2️⃣ Nhấn <strong style="color:var(--cyan)">MỞ YOPMAIL</strong> → Tab mới mở hộp thư Yopmail của địa chỉ email đó</div>
+              <div>3️⃣ Nếu có captcha → Giải 1 lần → Sau đó xem thư thoải mái</div>
+              <div>4️⃣ OTP / Link xác minh sẽ tự xuất hiện trong vài giây sau khi gửi</div>
+              <div>5️⃣ Nhấn <strong style="color:var(--cyan)">LƯU LẠI</strong> để giữ email dùng lại sau mà không mất</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end tab-inbox -->
+
+  <!-- ═══ TAB: SAVED ════════════════════════════════════════ -->
+  <div class="tp" id="tp-saved">
+    <div class="card">
+      <div class="card-head">
+        <span class="stitle">💾 EMAIL ĐÃ LƯU</span>
+        <span style="font-size:10px;color:var(--muted)">Lưu vĩnh viễn – Dùng lại bất kỳ lúc nào</span>
+      </div>
+      <div class="card-body">
+        <div id="svlist" class="svlist">
+          <div class="esaved">📭 Chưa có email nào được lưu.<br>Tạo email rồi nhấn <span style="color:var(--cyan)">💾 LƯU LẠI</span> để giữ vĩnh viễn!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: CONTACT ══════════════════════════════════════ -->
+  <div class="tp" id="tp-contact">
+    <div class="card">
+      <div class="card-head">
+        <span class="stitle">📞 LIÊN HỆ ADMIN</span>
+        <span style="font-size:10px;color:var(--muted)">Hỗ trợ miễn phí 24/7</span>
+      </div>
+      <div class="card-body">
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-family:'Orbitron',sans-serif;font-size:17px;font-weight:700;color:var(--white);margin-bottom:4px">Lê Tiến Dũng</div>
+          <div style="font-size:11px;color:var(--muted)">Admin & Developer – LTD Mail System</div>
+          <div style="margin-top:10px;display:flex;justify-content:center;gap:7px;flex-wrap:wrap">
+            <span class="ft ftg">✅ Hỗ trợ miễn phí</span>
+            <span class="ft ftc">⚡ Phản hồi nhanh</span>
+            <span class="ft ftp">🔒 Bảo mật tuyệt đối</span>
+          </div>
+        </div>
+        <div class="cgrid">
+          <a href="https://www.facebook.com/dunglectema" target="_blank" rel="noopener" class="ccard">
+            <div class="cc-icon">📘</div>
+            <div class="cc-name">Facebook</div>
+            <div class="cc-h">facebook.com/dunglectema</div>
+            <div class="cc-d">Nhắn tin Messenger để được hỗ trợ kỹ thuật, tư vấn tạo acc nhanh nhất</div>
+            <div style="margin-top:12px"><span class="ft ftc">Nhắn tin ngay →</span></div>
+          </a>
+          <a href="https://zalo.me/84969411158" target="_blank" rel="noopener" class="ccard">
+            <div class="cc-icon">💬</div>
+            <div class="cc-name">Zalo</div>
+            <div class="cc-h">0969.411.158</div>
+            <div class="cc-d">Liên hệ Zalo để được tư vấn trực tiếp, hỗ trợ nhận OTP, tạo tài khoản</div>
+            <div style="margin-top:12px"><span class="ft ftg">Chat Zalo →</span></div>
+          </a>
+          <div class="ccard" style="cursor:default">
+            <div class="cc-icon">📖</div>
+            <div class="cc-name">Hướng Dẫn Nhanh</div>
+            <div class="cc-h">ltdmail – letiendung.com</div>
+            <div class="cc-d" style="text-align:left;margin-top:10px">
+              <div style="margin-bottom:5px">1️⃣ Nhấn <b style="color:var(--cyan)">TẠO EMAIL</b> để lấy địa chỉ</div>
+              <div style="margin-bottom:5px">2️⃣ <b style="color:var(--cyan)">SAO CHÉP</b> → Dán vào đăng ký FB/App</div>
+              <div style="margin-bottom:5px">3️⃣ <b style="color:var(--cyan)">MỞ YOPMAIL</b> → Xem OTP ngay</div>
+              <div style="margin-bottom:5px">4️⃣ <b style="color:var(--cyan)">LƯU LẠI</b> → Dùng lại mãi mãi</div>
+              <div>5️⃣ Tab <b style="color:var(--cyan)">Đã Lưu</b> → Kích hoạt lại</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end wrap -->
+
+<footer>
+  <div>Xây dựng bởi <span>Lê Tiến Dũng</span> • LTD Mail © 2025 • Powered by Yopmail API</div>
+  <div style="margin-top:5px">
+    <a href="https://www.facebook.com/dunglectema" target="_blank">📘 Facebook</a> &nbsp;•&nbsp;
+    <a href="https://zalo.me/84969411158" target="_blank">💬 Zalo 0969.411.158</a>
+  </div>
+</footer>
+
+<div id="tbox"></div>
+
+<!-- ══════════════ SCRIPT ══════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ── STATE ─────────────────────────────────────────────────────────
+const S = {
+  email: null,
+  prefix: null,
+  domain: null,
+  domainIdx: 0,
+  emails: [],
+  selId: null,
+  timer: null,
+  totalRx: 0,
+  unread: 0,
+  saved: [],
+};
+
+// Yopmail domains (từ file gốc, đổi tên thành LTD branded)
+const DOMAINS = [
+  'letiendung.ooguy.com',
+  'ltdmail.accesscam.org',
+  'mailltd.camdvr.org',
+  'ltdmail1s.casacam.net',
+  'letiendung.webredirect.org',
+  'dungmail.loseyourip.com',
+];
+
+// ── STORAGE ───────────────────────────────────────────────────────
+function loadSaved() {
+  try { S.saved = JSON.parse(localStorage.getItem('ltd_v3') || '[]'); } catch { S.saved = []; }
+  updSavedCnt();
+}
+function storeSaved() {
+  try { localStorage.setItem('ltd_v3', JSON.stringify(S.saved)); } catch {}
+  updSavedCnt();
+}
+function updSavedCnt() {
+  const el = document.getElementById('stSaved');
+  if (el) el.textContent = S.saved.length;
+}
+
+// ── TABS ──────────────────────────────────────────────────────────
+function goTab(name) {
+  document.querySelectorAll('.tp').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tp-' + name).classList.add('on');
+  const order = ['inbox','saved','contact'];
+  const tabs = document.querySelectorAll('.ntab');
+  const i = order.indexOf(name);
+  if (tabs[i]) tabs[i].classList.add('active');
+  if (name === 'saved') renderSaved();
+}
+
+// ── DOMAIN CHANGE ─────────────────────────────────────────────────
+function onDomainChange() {
+  const sel = document.getElementById('dsel');
+  S.domainIdx = sel.selectedIndex;
+}
+
+// ── RANDOM ────────────────────────────────────────────────────────
+const A = ['swift','cool','lucky','bright','ninja','epic','neon','cyber','flash','wild','smart','super','dark','blue','fire','fast','hot','pro'];
+const N = ['fox','hawk','wolf','panda','tiger','robot','pixel','ghost','storm','blade','byte','sonic','duck','bear','lion','star','king','ace'];
+function rnd(a) { return a[Math.floor(Math.random()*a.length)]; }
+function mkRandName() { return `${rnd(A)}${rnd(N)}${Math.floor(Math.random()*9999)}`; }
+
+function doRandom() {
+  document.getElementById('epfx').value = mkRandName();
+  const sel = document.getElementById('dsel');
+  sel.selectedIndex = Math.floor(Math.random() * sel.options.length);
+  S.domainIdx = sel.selectedIndex;
+  toast('🎲 Đã tạo tên ngẫu nhiên!','i');
+}
+
+// ── YOPMAIL URL BUILDER ───────────────────────────────────────────
+// Logic từ file gốc: lấy phần đầu domain trước dấu chấm đầu tiên
+function buildYopUrl(prefix, domainFull) {
+  const domainParts = domainFull.split('.');
+  const domainPrefix = domainParts[0]; // vd: "letiendung" từ "letiendung.ooguy.com"
+  return `https://yopmail.com/en/?login=${encodeURIComponent(prefix)}&domain=${encodeURIComponent(domainPrefix)}`;
+}
+
+// ── CREATE EMAIL ──────────────────────────────────────────────────
+function doCreate() {
+  let px = document.getElementById('epfx').value.trim();
+  const sel = document.getElementById('dsel');
+  const dom = sel.value;
+  S.domainIdx = sel.selectedIndex;
+
+  if (!px) px = mkRandName();
+  px = px.toLowerCase().replace(/[^a-z0-9._-]/g,'').substring(0,30) || mkRandName();
+
+  const btn = document.getElementById('cbtn');
+  btn.disabled = true;
+  btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 0.8s linear infinite"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> ĐANG TẠO...`;
+
+  if (S.timer) clearInterval(S.timer);
+
+  S.email = `${px}@${dom}`;
+  S.prefix = px;
+  S.domain = dom;
+  S.emails = [];
+  S.selId = null;
+  S.totalRx = 0;
+  S.unread = 0;
+
+  // Update UI
+  document.getElementById('eshow').innerHTML = `${esc(px)}<span>@${esc(dom)}</span>`;
+  document.getElementById('ebar').style.display = 'flex';
+  document.getElementById('igrid').style.display = 'grid';
+  document.getElementById('yopSection').style.display = 'block';
+  document.getElementById('yopEmailShow').textContent = S.email;
+  document.getElementById('yopIframeWrap').style.display = 'none';
+  document.getElementById('yopAction').style.display = 'block';
+
+  updStats(); renderInbox();
+
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> TẠO EMAIL`;
+
+  toast(`✅ Đã tạo: ${S.email}`, 's');
+  startTimer();
+  document.getElementById('igrid').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── AUTO REFRESH TIMER ────────────────────────────────────────────
+function startTimer() {
+  if (S.timer) clearInterval(S.timer);
+  restartBar();
+  S.timer = setInterval(() => { doRefresh(); restartBar(); }, 10000);
+}
+function restartBar() {
+  const el = document.getElementById('pfill');
+  if (!el) return;
+  el.style.animation = 'none';
+  void el.offsetHeight;
+  el.style.animation = 'pA 10s linear forwards';
+}
+
+// ── REFRESH INBOX ─────────────────────────────────────────────────
+// Yopmail không có JSON API public, nên chúng ta dùng demo mails
+// và hướng user mở tab Yopmail để xem thư thật
+function doRefresh() {
+  if (!S.email) return;
+  const btn = document.getElementById('rbtn');
+  if (btn) btn.classList.add('sp');
+  setTimeout(() => { if (btn) btn.classList.remove('sp'); }, 800);
+  // Inject demo nếu hộp thư còn trống (minh hoạ UX)
+  if (S.emails.length === 0) injectDemo();
+}
+
+function updStats() {
+  const t = document.getElementById('stTotal'); if(t) t.textContent = S.totalRx;
+  const u = document.getElementById('stUnread'); if(u) u.textContent = S.unread;
+  const c = document.getElementById('icnt'); if(c) c.textContent = S.emails.length;
+}
+
+// ── RENDER INBOX ──────────────────────────────────────────────────
+function renderInbox(anim=false) {
+  const el = document.getElementById('elist');
+  if (!el) return;
+  if (!S.emails.length) {
+    el.innerHTML = `<div class="emptybox"><span class="eicon">📭</span><div class="et1">Hộp thư trống</div><div class="et2">Đang chờ thư – Nhấn MỞ YOPMAIL để xem</div></div>`;
+    return;
+  }
+  el.innerHTML = S.emails.map((m,i) => `
+    <div class="ei ${m.unread?'unr':''} ${S.selId===m.id?'act':''} ${anim&&i===0?'npulse':''}"
+         onclick="openMail(${JSON.stringify(m.id)})">
+      <div class="ef">${esc(m.from)}</div>
+      <div class="es">${esc(m.subject)}</div>
+      <div class="et">${fmtT(m.time)}</div>
+    </div>`).join('');
+}
+
+// ── OPEN MAIL ─────────────────────────────────────────────────────
+function openMail(id) {
+  S.selId = id;
+  const m = S.emails.find(e=>e.id===id);
+  if (!m) return;
+  if (m.unread) { m.unread=false; S.unread=Math.max(0,S.unread-1); updStats(); }
+  renderInbox();
+
+  const view = document.getElementById('mview');
+  view.innerHTML = `
+    <div class="mhead">
+      <div class="msubj">${esc(m.subject)}</div>
+      <div class="mmeta">
+        <div class="mrow"><span class="mk">Từ:</span><span class="mv">${esc(m.from)}</span></div>
+        <div class="mrow"><span class="mk">Đến:</span><span class="mv">${esc(S.email)}</span></div>
+        <div class="mrow"><span class="mk">Lúc:</span><span class="mv">${fmtF(m.time)}</span></div>
+      </div>
+    </div>
+    <div class="mbody-wrap">
+      <div class="mbody">${esc(m.body)}</div>
+    </div>
+    <div class="mtbar">
+      <button class="btn btn-p sm" onclick="doYopmail()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Xem hộp thư thật
+      </button>
+      <button class="btn btn-d sm" onclick="delMail(${JSON.stringify(id)})">🗑 Xóa</button>
+    </div>`;
+}
+
+function delMail(id) {
+  S.emails = S.emails.filter(e=>e.id!==id);
+  S.selId = null; updStats(); renderInbox();
+  document.getElementById('mview').innerHTML = `<div class="mph"><div class="mph-icon">💌</div><div style="font-size:12px;color:var(--muted)">Chọn thư để đọc</div></div>`;
+  toast('🗑 Đã xóa thư!','i');
+}
+
+// ── COPY ──────────────────────────────────────────────────────────
+function doCopy() {
+  if (!S.email) { toast('⚠️ Chưa có email!','e'); return; }
+  copyText(S.email, () => {
+    toast(`📋 Đã sao chép: ${S.email}`,'s');
+    const bar = document.getElementById('ebar');
+    if(bar){bar.classList.add('cflash');setTimeout(()=>bar.classList.remove('cflash'),400);}
+    const btn = document.getElementById('copybtn');
+    if(btn){const o=btn.innerHTML;btn.innerHTML=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> ĐÃ CHÉP ✓`;setTimeout(()=>{btn.innerHTML=o;},2000);}
+  });
+}
+
+function copyText(text, onOk) {
+  // Method 1: Clipboard API
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(onOk).catch(() => fallback(text, onOk));
+  } else { fallback(text, onOk); }
+}
+
+function fallback(text, onOk) {
+  // Method 2: execCommand - works on all browsers + GitHub Pages
+  try {
+    const el = document.createElement('input');
+    el.type='text'; el.value=text;
+    el.style.cssText='position:fixed;left:0;top:0;opacity:0.001;width:1px;height:1px;pointer-events:none';
+    document.body.appendChild(el);
+    el.focus(); el.select(); el.setSelectionRange(0,9999);
+    const ok = document.execCommand('copy');
+    document.body.removeChild(el);
+    if (ok) { onOk(); }
+    else { promptCopy(text); }
+  } catch { promptCopy(text); }
+}
+
+function promptCopy(text) {
+  toast(`📋 Copy thủ công: ${text}`,'i');
+  try { window.prompt('Nhấn Ctrl+C để copy:', text); } catch {}
+}
+
+// ── YOPMAIL ───────────────────────────────────────────────────────
+function doYopmail() {
+  if (!S.email) { toast('⚠️ Chưa có email!','e'); return; }
+  const url = buildYopUrl(S.prefix, S.domain);
+  window.open(url, '_blank');
+  toast('🌐 Đã mở Yopmail trong tab mới!','s');
+}
+
+function tryIframe() {
+  if (!S.email) { toast('⚠️ Chưa có email!','e'); return; }
+  const url = buildYopUrl(S.prefix, S.domain);
+  const wrap = document.getElementById('yopIframeWrap');
+  const frame = document.getElementById('yopFrame');
+  frame.src = url;
+  document.getElementById('yopAction').style.display = 'none';
+  wrap.style.display = 'block';
+  toast('📡 Đang tải Yopmail...','i');
+}
+
+function hideIframe() {
+  document.getElementById('yopIframeWrap').style.display = 'none';
+  document.getElementById('yopAction').style.display = 'block';
+}
+
+function reloadYop() {
+  const frame = document.getElementById('yopFrame');
+  if (frame.src) { frame.src = frame.src; toast('🔄 Đang tải lại...','i'); }
+  else { doYopmail(); }
+}
+
+// ── SAVE EMAIL ────────────────────────────────────────────────────
+function doSave() {
+  if (!S.email) { toast('⚠️ Chưa có email!','e'); return; }
+  if (S.saved.find(e=>e.addr===S.email)) { toast('⚠️ Email này đã được lưu!','i'); return; }
+  S.saved.unshift({ addr:S.email, prefix:S.prefix, domain:S.domain, savedAt:new Date().toISOString() });
+  storeSaved(); renderSaved();
+  toast(`💾 Đã lưu: ${S.email}`,'s');
+}
+
+function renderSaved() {
+  const el = document.getElementById('svlist');
+  if (!el) return;
+  if (!S.saved.length) {
+    el.innerHTML = `<div class="esaved">📭 Chưa có email nào được lưu.<br>Tạo email rồi nhấn <span style="color:var(--cyan)">💾 LƯU LẠI</span> để giữ vĩnh viễn!</div>`;
+    return;
+  }
+  el.innerHTML = S.saved.map((e,i) => {
+    const [name,dom] = e.addr.split('@');
+    const dt = new Date(e.savedAt).toLocaleDateString('vi-VN');
+    return `
+    <div class="svitem">
+      <div style="flex:1;min-width:0">
+        <div class="svaddr">${esc(name)}<span>@${esc(dom||'')}</span></div>
+        <div class="svmeta">💾 Lưu ngày ${dt}</div>
+      </div>
+      <div class="svbtns">
+        <button class="btn btn-p sm" onclick="loadSaved(${i})">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg> DÙNG LẠI
+        </button>
+        <button class="btn btn-g sm" onclick="copySaved(${i})">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> COPY
+        </button>
+        <button class="btn btn-o sm" onclick="openSavedYop(${i})">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> YOPMAIL
+        </button>
+        <button class="btn btn-d sm" onclick="delSaved(${i})" title="Xóa">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadSaved(i) {
+  const sv = S.saved[i]; if(!sv) return;
+  if (S.timer) clearInterval(S.timer);
+  S.email=sv.addr; S.prefix=sv.prefix||sv.addr.split('@')[0]; S.domain=sv.domain||sv.addr.split('@')[1];
+  S.emails=[]; S.selId=null; S.totalRx=0; S.unread=0;
+
+  document.getElementById('epfx').value = S.prefix;
+  const sel = document.getElementById('dsel');
+  for (const o of sel.options) { if(o.value===S.domain){sel.value=S.domain;break;} }
+
+  document.getElementById('eshow').innerHTML = `${esc(S.prefix)}<span>@${esc(S.domain)}</span>`;
+  document.getElementById('ebar').style.display = 'flex';
+  document.getElementById('igrid').style.display = 'grid';
+  document.getElementById('yopSection').style.display = 'block';
+  document.getElementById('yopEmailShow').textContent = S.email;
+  document.getElementById('yopIframeWrap').style.display = 'none';
+  document.getElementById('yopAction').style.display = 'block';
+
+  updStats(); renderInbox(); startTimer();
+  goTab('inbox');
+  toast(`✅ Đã kích hoạt lại: ${S.email}`,'s');
+  setTimeout(()=>{ if(S.emails.length===0) injectDemo(); }, 2000);
+}
+
+function copySaved(i) {
+  const sv = S.saved[i]; if(!sv) return;
+  copyText(sv.addr, () => toast(`📋 Đã sao chép: ${sv.addr}`,'s'));
+}
+
+function openSavedYop(i) {
+  const sv = S.saved[i]; if(!sv) return;
+  const px = sv.prefix || sv.addr.split('@')[0];
+  const dom = sv.domain || sv.addr.split('@')[1];
+  const url = buildYopUrl(px, dom);
+  window.open(url, '_blank');
+  toast('🌐 Đã mở Yopmail!','s');
+}
+
+function delSaved(i) {
+  S.saved.splice(i,1); storeSaved(); renderSaved();
+  toast('🗑 Đã xóa!','i');
+}
+
+// ── RESET ─────────────────────────────────────────────────────────
+function doReset() {
+  if (S.timer) clearInterval(S.timer);
+  S.email=null; S.prefix=null; S.domain=null; S.emails=[]; S.selId=null;
+  document.getElementById('ebar').style.display = 'none';
+  document.getElementById('igrid').style.display = 'none';
+  document.getElementById('yopSection').style.display = 'none';
+  document.getElementById('epfx').value = '';
+  toast('🔄 Nhập tên mới và nhấn TẠO EMAIL!','i');
+  document.getElementById('epfx').focus();
+}
+
+// ── DEMO MAILS (minh hoạ UX, thư thật xem qua Yopmail tab) ───────
+const DEMOS = [
+  { from:'security@facebookmail.com', subject:'Your Facebook verification code',
+    body:'Xin chào!\n\nMã xác minh Facebook của bạn:\n\n  ✅  481 027\n\nMã hết hạn sau 10 phút. Không chia sẻ mã này.\n\n💡 Đây là email demo. Nhấn nút "Xem hộp thư thật" để xem OTP thật trên Yopmail!\n\n— Facebook Security' },
+  { from:'no-reply@accounts.google.com', subject:'Mã xác minh Google: 738415',
+    body:'Mã xác minh Google:\n\n  🔐  738 415\n\nHết hạn sau 10 phút.\n\n💡 Đây là email demo. Nhấn nút MỞ YOPMAIL để xem thư thật!\n\n— Google Account Team' },
+  { from:'verify@tiktok.com', subject:'TikTok OTP: 204891',
+    body:'Mã OTP TikTok:\n\n  🎵  204 891\n\nHiệu lực 5 phút.\n\n💡 Demo email – Mở Yopmail để nhận OTP thật!\n\n— TikTok' },
+  { from:'noreply@github.com', subject:'[GitHub] Verify your email address',
+    body:'Please verify your GitHub email:\n\nhttps://github.com/verify?token=ghp_demo\n\n💡 Demo. Open Yopmail to see real verification emails!\n\n— GitHub' },
+];
+let demoIdx = 0;
+
+function injectDemo() {
+  if (!S.email) return;
+  const m = DEMOS[demoIdx % DEMOS.length]; demoIdx++;
+  const id = 'demo_' + Date.now();
+  S.emails.unshift({ id, from:m.from, subject:m.subject, time:new Date(), body:m.body, unread:true });
+  S.totalRx++; S.unread++;
+  updStats(); renderInbox(true);
+  toast(`📬 Thư demo từ ${m.from}`, 'i');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────
+function toast(msg, type='i') {
+  const box = document.getElementById('tbox');
+  if (!box) return;
+  const t = document.createElement('div');
+  const cls = {s:'ts',e:'te',i:'ti'}[type]||'ti';
+  t.className = `toast ${cls}`;
+  t.innerHTML = msg;
+  box.appendChild(t);
+  setTimeout(() => {
+    t.style.transition = 'all 0.3s ease';
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(38px) scale(0.9)';
+    setTimeout(() => { try{t.remove();}catch{} }, 300);
+  }, 3500);
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtT(d){
+  try{ const diff=Date.now()-d; if(diff<60000)return 'Vừa xong'; if(diff<3600000)return `${Math.floor(diff/60000)} phút trước`; return d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}); }catch{return ''}
+}
+function fmtF(d){
+  try{return d.toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'})}catch{return String(d)}
+}
+
+// ── KEYBOARD ──────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key==='Enter' && document.activeElement===document.getElementById('epfx')) doCreate();
+  if (e.ctrlKey && (e.key==='r'||e.key==='R') && S.email) { e.preventDefault(); doRefresh(); }
+});
+
+// ── INIT ──────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  loadSaved();
+  setTimeout(() => {
+    const ov = document.getElementById('ld');
+    if (ov) { ov.classList.add('gone'); setTimeout(()=>{try{ov.remove();}catch{}},500); }
+  }, 1500);
+  const inp = document.getElementById('epfx');
+  if (inp) inp.focus();
+});
+</script>
+</body>
+</html>
