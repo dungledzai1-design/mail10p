@@ -268,13 +268,17 @@ footer a{color:var(--cyan);text-decoration:none}footer span{color:var(--cyan)}
             <input type="text" id="epfx" class="ifield" placeholder="tên tùy chọn (hoặc để trống)" maxlength="30" autocomplete="off" spellcheck="false">
             <span class="iat">@</span>
             <select id="dsel" class="dsel" onchange="onDomainChange()">
-              <!-- Yopmail domains từ file gốc -->
-              <option value="letiendung.ooguy.com">letiendung.ooguy.com</option>
-              <option value="ltdmail.accesscam.org">ltdmail.accesscam.org</option>
-              <option value="mailltd.camdvr.org">mailltd.camdvr.org</option>
-              <option value="ltdmail1s.casacam.net">ltdmail1s.casacam.net</option>
-              <option value="letiendung.webredirect.org">letiendung.webredirect.org</option>
-              <option value="dungmail.loseyourip.com">dungmail.loseyourip.com</option>
+              <!-- Các tên miền uy tín, dễ qua mặt Facebook -->
+              <option value="mailc.net">mailc.net</option>
+              <option value="mymail-in.net">mymail-in.net</option>
+              <option value="inboxbear.com">inboxbear.com</option>
+              <option value="rcpt.at">rcpt.at</option>
+              <option value="spambox.us">spambox.us</option>
+              <option value="mailmetrash.com">mailmetrash.com</option>
+              <option value="mailexpire.com">mailexpire.com</option>
+              <option value="guerrillamail.org">guerrillamail.org</option>
+              <option value="sharklasers.com">sharklasers.com</option>
+              <option value="grr.la">grr.la</option>
             </select>
           </div>
           <button class="btn btn-s" onclick="doRandom()">
@@ -514,14 +518,18 @@ const S = {
   saved: [],
 };
 
-// Yopmail domains (từ file gốc, đổi tên thành LTD branded)
+// Các tên miền uy tín, dễ qua mặt Facebook
 const DOMAINS = [
-  'letiendung.ooguy.com',
-  'ltdmail.accesscam.org',
-  'mailltd.camdvr.org',
-  'ltdmail1s.casacam.net',
-  'letiendung.webredirect.org',
-  'dungmail.loseyourip.com',
+  'mailc.net',
+  'mymail-in.net',
+  'inboxbear.com',
+  'rcpt.at',
+  'spambox.us',
+  'mailmetrash.com',
+  'mailexpire.com',
+  'guerrillamail.org',
+  'sharklasers.com',
+  'grr.la',
 ];
 
 // ── STORAGE ───────────────────────────────────────────────────────
@@ -571,10 +579,9 @@ function doRandom() {
 }
 
 // ── YOPMAIL URL BUILDER ───────────────────────────────────────────
-// Logic từ file gốc: lấy phần đầu domain trước dấu chấm đầu tiên
 function buildYopUrl(prefix, domainFull) {
   const domainParts = domainFull.split('.');
-  const domainPrefix = domainParts[0]; // vd: "letiendung" từ "letiendung.ooguy.com"
+  const domainPrefix = domainParts[0];
   return `https://yopmail.com/en/?login=${encodeURIComponent(prefix)}&domain=${encodeURIComponent(domainPrefix)}`;
 }
 
@@ -636,14 +643,11 @@ function restartBar() {
 }
 
 // ── REFRESH INBOX ─────────────────────────────────────────────────
-// Yopmail không có JSON API public, nên chúng ta dùng demo mails
-// và hướng user mở tab Yopmail để xem thư thật
 function doRefresh() {
   if (!S.email) return;
   const btn = document.getElementById('rbtn');
   if (btn) btn.classList.add('sp');
   setTimeout(() => { if (btn) btn.classList.remove('sp'); }, 800);
-  // Inject demo nếu hộp thư còn trống (minh hoạ UX)
   if (S.emails.length === 0) injectDemo();
 }
 
@@ -663,7 +667,7 @@ function renderInbox(anim=false) {
   }
   el.innerHTML = S.emails.map((m,i) => `
     <div class="ei ${m.unread?'unr':''} ${S.selId===m.id?'act':''} ${anim&&i===0?'npulse':''}"
-         onclick="openMail(${JSON.stringify(m.id)})">
+         onclick="openMail('${m.id}')">
       <div class="ef">${esc(m.from)}</div>
       <div class="es">${esc(m.subject)}</div>
       <div class="et">${fmtT(m.time)}</div>
@@ -696,7 +700,7 @@ function openMail(id) {
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
         Xem hộp thư thật
       </button>
-      <button class="btn btn-d sm" onclick="delMail(${JSON.stringify(id)})">🗑 Xóa</button>
+      <button class="btn btn-d sm" onclick="delMail('${id}')">🗑 Xóa</button>
     </div>`;
 }
 
@@ -720,14 +724,12 @@ function doCopy() {
 }
 
 function copyText(text, onOk) {
-  // Method 1: Clipboard API
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(onOk).catch(() => fallback(text, onOk));
   } else { fallback(text, onOk); }
 }
 
 function fallback(text, onOk) {
-  // Method 2: execCommand - works on all browsers + GitHub Pages
   try {
     const el = document.createElement('input');
     el.type='text'; el.value=text;
@@ -874,7 +876,7 @@ function doReset() {
   document.getElementById('epfx').focus();
 }
 
-// ── DEMO MAILS (minh hoạ UX, thư thật xem qua Yopmail tab) ───────
+// ── DEMO MAILS ────────────────────────────────────────────────────
 const DEMOS = [
   { from:'security@facebookmail.com', subject:'Your Facebook verification code',
     body:'Xin chào!\n\nMã xác minh Facebook của bạn:\n\n  ✅  481 027\n\nMã hết hạn sau 10 phút. Không chia sẻ mã này.\n\n💡 Đây là email demo. Nhấn nút "Xem hộp thư thật" để xem OTP thật trên Yopmail!\n\n— Facebook Security' },
@@ -890,7 +892,7 @@ let demoIdx = 0;
 function injectDemo() {
   if (!S.email) return;
   const m = DEMOS[demoIdx % DEMOS.length]; demoIdx++;
-  const id = 'demo_' + Date.now();
+  const id = 'demo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
   S.emails.unshift({ id, from:m.from, subject:m.subject, time:new Date(), body:m.body, unread:true });
   S.totalRx++; S.unread++;
   updStats(); renderInbox(true);
