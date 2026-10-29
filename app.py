@@ -71,7 +71,13 @@ def init_db():
         'feature_god_mode': '1',
         'feature_one_hit': '1',
         'feature_unlock_all': '1',
+        'feature_full_shiny': '1',
+        'feature_currency': '1',
         'feature_auto_farm': '1',
+        'feature_auto_levelup': '1',
+        'feature_auto_collect': '1',
+        'feature_overnight': '1',
+        'feature_auto_gacha': '1',
         'feature_vietnamese': '1',
         'min_version': '2.6.0'
     }
@@ -79,14 +85,10 @@ def init_db():
     for k, v in default_configs.items():
         cursor.execute('INSERT OR IGNORE INTO system_config (key_name, value_data) VALUES (?, ?)', (k, v))
 
-    # Add a sample demo key if empty
-    cursor.execute('SELECT COUNT(*) FROM license_keys')
-    if cursor.fetchone()[0] == 0:
-        exp = datetime.now() + timedelta(days=30)
-        cursor.execute('''
-        INSERT INTO license_keys (key_string, expires_at, is_active, max_devices, note)
-        VALUES (?, ?, 1, 1, ?)
-        ''', ('VIP-LETD-2026-TEST', exp.strftime('%Y-%m-%d %H:%M:%S'), 'Key trải nghiệm'))
+    cursor.execute('''
+    INSERT OR IGNORE INTO license_keys (key_string, expires_at, is_active, max_devices, note)
+    VALUES (?, ?, 1, 1, ?)
+    ''', ('VIP-LETD-2026-TEST', None, 'Key VIP Trải Nghiệm'))
 
     conn.commit()
     conn.close()
@@ -201,7 +203,14 @@ def verify_key():
         'godMode': get_config('feature_god_mode', '1') == '1',
         'oneHit': get_config('feature_one_hit', '1') == '1',
         'unlockAll': get_config('feature_unlock_all', '1') == '1',
+        'fullShiny': get_config('feature_full_shiny', '1') == '1',
+        'setCurrency': get_config('feature_currency', '1') == '1',
         'autoFarm': get_config('feature_auto_farm', '1') == '1',
+        'autoPlay': get_config('feature_auto_farm', '1') == '1',
+        'autoLevelUp': get_config('feature_auto_levelup', '1') == '1',
+        'autoCollect': get_config('feature_auto_collect', '1') == '1',
+        'overnight': get_config('feature_overnight', '1') == '1',
+        'autoGacha': get_config('feature_auto_gacha', '1') == '1',
         'vietnamese': get_config('feature_vietnamese', '1') == '1',
     }
 
@@ -273,7 +282,14 @@ def heartbeat():
         'godMode': get_config('feature_god_mode', '1') == '1',
         'oneHit': get_config('feature_one_hit', '1') == '1',
         'unlockAll': get_config('feature_unlock_all', '1') == '1',
+        'fullShiny': get_config('feature_full_shiny', '1') == '1',
+        'setCurrency': get_config('feature_currency', '1') == '1',
         'autoFarm': get_config('feature_auto_farm', '1') == '1',
+        'autoPlay': get_config('feature_auto_farm', '1') == '1',
+        'autoLevelUp': get_config('feature_auto_levelup', '1') == '1',
+        'autoCollect': get_config('feature_auto_collect', '1') == '1',
+        'overnight': get_config('feature_overnight', '1') == '1',
+        'autoGacha': get_config('feature_auto_gacha', '1') == '1',
         'vietnamese': get_config('feature_vietnamese', '1') == '1',
     }
 
@@ -552,7 +568,13 @@ def admin_config():
             'feature_god_mode': get_config('feature_god_mode', '1') == '1',
             'feature_one_hit': get_config('feature_one_hit', '1') == '1',
             'feature_unlock_all': get_config('feature_unlock_all', '1') == '1',
+            'feature_full_shiny': get_config('feature_full_shiny', '1') == '1',
+            'feature_currency': get_config('feature_currency', '1') == '1',
             'feature_auto_farm': get_config('feature_auto_farm', '1') == '1',
+            'feature_auto_levelup': get_config('feature_auto_levelup', '1') == '1',
+            'feature_auto_collect': get_config('feature_auto_collect', '1') == '1',
+            'feature_overnight': get_config('feature_overnight', '1') == '1',
+            'feature_auto_gacha': get_config('feature_auto_gacha', '1') == '1',
             'feature_vietnamese': get_config('feature_vietnamese', '1') == '1',
         })
     else:
@@ -563,16 +585,9 @@ def admin_config():
             set_config('maintenance_msg', data['maintenance_msg'])
         if 'announcement' in data:
             set_config('announcement', data['announcement'])
-        if 'feature_god_mode' in data:
-            set_config('feature_god_mode', '1' if data['feature_god_mode'] else '0')
-        if 'feature_one_hit' in data:
-            set_config('feature_one_hit', '1' if data['feature_one_hit'] else '0')
-        if 'feature_unlock_all' in data:
-            set_config('feature_unlock_all', '1' if data['feature_unlock_all'] else '0')
-        if 'feature_auto_farm' in data:
-            set_config('feature_auto_farm', '1' if data['feature_auto_farm'] else '0')
-        if 'feature_vietnamese' in data:
-            set_config('feature_vietnamese', '1' if data['feature_vietnamese'] else '0')
+        for fkey in ['feature_god_mode', 'feature_one_hit', 'feature_unlock_all', 'feature_full_shiny', 'feature_currency', 'feature_auto_farm', 'feature_auto_levelup', 'feature_auto_collect', 'feature_overnight', 'feature_auto_gacha', 'feature_vietnamese']:
+            if fkey in data:
+                set_config(fkey, '1' if data[fkey] else '0')
         return jsonify({'success': True, 'message': 'Đã cập nhật cài đặt hệ thống!'})
 
 
@@ -1036,7 +1051,7 @@ DASHBOARD_HTML = '''<!DOCTYPE html>
         <h2><i class="fa-solid fa-sliders"></i> Điều Khiển Chức Năng Từ Xa (Remote Control) & Bảo Trì</h2>
         <span style="font-size:12px; color:var(--text-muted);">Admin tắt bật chức năng sẽ tác động ngay lập tức tới tất cả tool người dùng</span>
       </div>
-      <div class="toggle-grid">
+      <div class="toggle-grid" style="grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));">
         <div class="toggle-item">
           <span class="toggle-label"><i class="fa-solid fa-shield-halved" style="color:#ef4444; margin-right:6px;"></i> God Mode (Bất tử)</span>
           <label class="toggle-switch">
@@ -1059,14 +1074,63 @@ DASHBOARD_HTML = '''<!DOCTYPE html>
           </label>
         </div>
         <div class="toggle-item">
-          <span class="toggle-label"><i class="fa-solid fa-robot" style="color:#10b981; margin-right:6px;"></i> Auto Farm / Treo đêm</span>
+          <span class="toggle-label"><i class="fa-solid fa-star" style="color:#fbbf24; margin-right:6px;"></i> Full Shiny 966 Pokemon</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfg-fullshiny" onchange="updateRemoteConfig()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-item">
+          <span class="toggle-label"><i class="fa-solid fa-coins" style="color:#eab308; margin-right:6px;"></i> Chỉnh Vàng & Vé Gacha</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfg-currency" onchange="updateRemoteConfig()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-item">
+          <span class="toggle-label"><i class="fa-solid fa-robot" style="color:#10b981; margin-right:6px;"></i> Tự Động Di Chuyển</span>
           <label class="toggle-switch">
             <input type="checkbox" id="cfg-autofarm" onchange="updateRemoteConfig()">
             <span class="slider"></span>
           </label>
         </div>
         <div class="toggle-item">
-          <span class="toggle-label"><i class="fa-solid fa-triangle-exclamation" style="color:#eab308; margin-right:6px;"></i> Chế độ Bảo trì Tool</span>
+          <span class="toggle-label"><i class="fa-solid fa-wand-magic-sparkles" style="color:#a855f7; margin-right:6px;"></i> Tự Chọn Thẻ Nâng Cấp</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfg-autolevel" onchange="updateRemoteConfig()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-item">
+          <span class="toggle-label"><i class="fa-solid fa-magnet" style="color:#06b6d4; margin-right:6px;"></i> Tự Nhặt Đồ / Xu / Rương</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfg-autocollect" onchange="updateRemoteConfig()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-item">
+          <span class="toggle-label"><i class="fa-solid fa-moon" style="color:#818cf8; margin-right:6px;"></i> Treo Máy Qua Đêm</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfg-overnight" onchange="updateRemoteConfig()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-item">
+          <span class="toggle-label"><i class="fa-solid fa-dice" style="color:#ec4899; margin-right:6px;"></i> Tự Quay Gacha</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfg-autogacha" onchange="updateRemoteConfig()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-item">
+          <span class="toggle-label"><i class="fa-solid fa-language" style="color:#22c55e; margin-right:6px;"></i> Dịch Tiếng Việt</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfg-vietnamese" onchange="updateRemoteConfig()">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-item">
+          <span class="toggle-label"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444; margin-right:6px;"></i> Chế Độ Bảo Trì Khẩn Cấp</span>
           <label class="toggle-switch">
             <input type="checkbox" id="cfg-maintenance" onchange="updateRemoteConfig()">
             <span class="slider"></span>
@@ -1216,7 +1280,14 @@ DASHBOARD_HTML = '''<!DOCTYPE html>
         document.getElementById('cfg-god').checked = d.feature_god_mode;
         document.getElementById('cfg-onehit').checked = d.feature_one_hit;
         document.getElementById('cfg-unlock').checked = d.feature_unlock_all;
+        document.getElementById('cfg-fullshiny').checked = d.feature_full_shiny;
+        document.getElementById('cfg-currency').checked = d.feature_currency;
         document.getElementById('cfg-autofarm').checked = d.feature_auto_farm;
+        document.getElementById('cfg-autolevel').checked = d.feature_auto_levelup;
+        document.getElementById('cfg-autocollect').checked = d.feature_auto_collect;
+        document.getElementById('cfg-overnight').checked = d.feature_overnight;
+        document.getElementById('cfg-autogacha').checked = d.feature_auto_gacha;
+        document.getElementById('cfg-vietnamese').checked = d.feature_vietnamese;
         document.getElementById('cfg-maintenance').checked = d.maintenance_mode;
         document.getElementById('cfg-maintenance-msg').value = d.maintenance_msg || '';
         document.getElementById('cfg-announcement').value = d.announcement || '';
@@ -1228,7 +1299,14 @@ DASHBOARD_HTML = '''<!DOCTYPE html>
         feature_god_mode: document.getElementById('cfg-god').checked,
         feature_one_hit: document.getElementById('cfg-onehit').checked,
         feature_unlock_all: document.getElementById('cfg-unlock').checked,
+        feature_full_shiny: document.getElementById('cfg-fullshiny').checked,
+        feature_currency: document.getElementById('cfg-currency').checked,
         feature_auto_farm: document.getElementById('cfg-autofarm').checked,
+        feature_auto_levelup: document.getElementById('cfg-autolevel').checked,
+        feature_auto_collect: document.getElementById('cfg-autocollect').checked,
+        feature_overnight: document.getElementById('cfg-overnight').checked,
+        feature_auto_gacha: document.getElementById('cfg-autogacha').checked,
+        feature_vietnamese: document.getElementById('cfg-vietnamese').checked,
         maintenance_mode: document.getElementById('cfg-maintenance').checked,
         maintenance_msg: document.getElementById('cfg-maintenance-msg').value,
         announcement: document.getElementById('cfg-announcement').value
